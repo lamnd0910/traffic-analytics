@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Biến môi trường thật (giữ .env.example)
+.env
+
+# Model weights — tự tải về khi chạy
+*.pt
+
+# Video output & video mẫu lớn
+output*.mp4
+data/samples/*.mp4
+
+# IDE
+.vscode/
+.idea/
