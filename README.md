@@ -146,28 +146,7 @@ For each frame, the background worker runs: **detect → track → count → ann
 | `WS`  | `/ws/stats` | Live count pushed over WebSocket |
 | `GET` | `/stats/history` | Per-minute counts from the database (JSON) |
 
----
 
-## 🗺️ Roadmap
-
-**Completed**
-
-- [x] Phase 0 — detection + annotation + video export
-- [x] Phase 1 — tracking with persistent IDs
-- [x] Phase 2 — line-crossing counter (count once per vehicle)
-- [x] Phase 3 — FastAPI backend + MJPEG live streaming
-- [x] Phase 4 — React dashboard + WebSocket live charts
-- [x] Phase 5 — SQLite storage + historical statistics
-
-**Planned**
-
-- [ ] Speed estimation with camera calibration (homography)
-- [ ] Per-class counting with label voting (stable car/truck labels)
-- [ ] Fine-tune YOLO on Vietnamese traffic footage
-- [ ] Configurable counting line / zones via a config file
-- [ ] Dockerized deployment
-
----
 
 ## 📝 Notes
 
