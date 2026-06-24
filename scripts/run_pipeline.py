@@ -1,13 +1,13 @@
 import cv2
-from ultralytics import YOLO
 import argparse
-
+from core.detector import VehicleDetector
+from core.counter import LineCounter
+from video import annotator
 parser = argparse.ArgumentParser(description="Phát hiện & vẽ box phương tiện trên video")
 parser.add_argument("video", help="Đường dẫn tới file video đầu vào")
 parser.add_argument("-o", "--output", default="output.mp4", help="Tên file video xuất ra")
 args = parser.parse_args()
 
-model = YOLO("yolo11n.pt")
 
 cap = cv2.VideoCapture(args.video)
 
@@ -25,25 +25,22 @@ else:
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     writer = cv2.VideoWriter(args.output, fourcc, fps, (width, height))
 
+    detector = VehicleDetector("yolo11s.pt")
+    line_y = height // 2          # vị trí vạch (thử giữa khung trước, chỉnh sau)
+    counter = LineCounter(line_y)                    # tổng số xe đã qua vạch
+
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        results = model.track(frame, persist=True, classes=[2, 3, 5, 7], verbose=False)
+        detections = detector.detect(frame)
+        for det in detections:
+            counter.update(det.track_id, det.center_y)
+            annotator.draw_detection(frame, det)
 
-        for box in results[0].boxes:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            cls_id = int(box.cls[0])
-            label = results[0].names[cls_id]
-
-            if box.id is None:
-                continue
-            track_id = int(box.id[0])
-
-            cv2.rectangle(frame, (x1, y1) , (x2, y2), (0, 255, 0), 3)
-            text = f"{label} #{track_id}"
-            cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        annotator.draw_line(frame, line_y, width)
+        annotator.draw_count(frame, counter.count)
 
         writer.write(frame)
         cv2.imshow("Detect", frame)
