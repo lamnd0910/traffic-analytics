@@ -30,15 +30,20 @@ else:
         if not ret:
             break
 
-        results = model(frame, classes=[2, 3, 5, 7], verbose=False)
+        results = model.track(frame, persist=True, classes=[2, 3, 5, 7], verbose=False)
 
         for box in results[0].boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             cls_id = int(box.cls[0])
             label = results[0].names[cls_id]
 
+            if box.id is None:
+                continue
+            track_id = int(box.id[0])
+
             cv2.rectangle(frame, (x1, y1) , (x2, y2), (0, 255, 0), 3)
-            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 3)
+            text = f"{label} #{track_id}"
+            cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         writer.write(frame)
         cv2.imshow("Detect", frame)
