@@ -8,10 +8,13 @@ class LineCounter:
         self.count = 0
 
     def update(self, track_id, center_y):
+        counted_now = False
         prev_y = self.track_history.get(track_id)
         if prev_y is not None:
             crossed = (prev_y < self.line_y) != (center_y < self.line_y)
             if crossed and track_id not in self.counted_ids:
                 self.count += 1
                 self.counted_ids.add(track_id)
+                counted_now = True
         self.track_history[track_id] = center_y
+        return counted_now
